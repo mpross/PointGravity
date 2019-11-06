@@ -23,6 +23,10 @@ function displayPoints(array1, array2)
 	xlabel( 'x (m)' );
 	ylabel( 'y (m)' );
 	zlabel( 'z (m)' );
-	axis( "equal" );
+    axis('equal')
+    xlim([-0.2 2.5])
+    zlim([-0.2 0.2])
+    ylim([-0.2 0.2])
+    grid on
 
 end
