@@ -1,14 +1,18 @@
 %All units are SI, always.
 
+rawDARM=load('LHO_strain_noise.mat');
+FDARM=rawDARM.output(:,1);
+DARM=rawDARM.output(:,2);
+
 rotF=30; % Rotation frequency
-tTotal=1; % Time interval to calculate
+tTotal=100; % Integration time
 
 a2l=0.1; % Angle to Length coupling
 
 % NCal Cylinder Parameters
 CylinderHeight = 2*0.0254;
 CylinderDiameter = 1.5*0.0254;
-CylinderMass = 1.055;
+CylinderMass = 1.0558;
 CylinderAxialGridPoints = 10;
 CylinderRadialGridPoints = 10;
 
@@ -16,7 +20,7 @@ CylinderRadialGridPoints = 10;
 RotorRadius2 = 2.375*0.0254; % Quadrople radius
 RotorRadius3 = 4.125*0.0254; % Hexapole radius
 
-RotorPosition = [2 0 0];
+RotorPosition = [-1.12365 -1.12365 0]-[-0.2 -0.39946 0];
 
 % Test Mass Parameters
 TMLength = 30e-2;
@@ -57,14 +61,14 @@ f = waitbar(0,'Calculating','Name','NCal PointGravity',...
     'CreateCancelBtn','setappdata(gcbf,''canceling'',1)');
 setappdata(f,'canceling',0);
 
-for angle = 0:0.1:2*pi
+for angle = 0:2*pi/10:2*pi
 
     if getappdata(f,'canceling')
         break
     end
     
 	RotatedRotor = rotatePMArray(Rotor, angle, [0 0 1]);
-	TranslatedRotatedRotor = translatePMArray(RotatedRotor, RotorPosition);
+	TranslatedRotatedRotor = translatePMArray(RotatedRotor, RotorPosition);    
 
 	displayPoints(TM, TranslatedRotatedRotor); 
 	[Force Torque ] = pointMatrixGravity(TM, TranslatedRotatedRotor);
@@ -141,7 +145,7 @@ strain=(x+a2l*xAng)/4e3;
 
 [AS, F2] = asd2(strain,1/sampF, 1, 1, @hann);
 
-AStrain=(AX+a2l*AAng)./F.^2/4/pi^2/4e3;
+AStrain=(AX+a2l*AAng)./F'.^2/4/pi^2/4e3;
 
 %% Fitting
 x1=[cos(2*pi*rotF*tim) sin(2*pi*rotF*tim)];
@@ -157,8 +161,8 @@ disp(['1F Amplitude: ' num2str(sqrt(w1(1)^2+w1(2)^2)) ' Phase: ' num2str(atan2(w
 disp(['2F Amplitude: ' num2str(sqrt(w2(1)^2+w2(2)^2)) ' Phase: ' num2str(atan2(w2(2),w2(1))*180/pi) ' deg'])
 disp(['3F Amplitude: ' num2str(sqrt(w3(1)^2+w3(2)^2)) ' Phase: ' num2str(atan2(w3(2),w3(1))*180/pi) ' deg'])
 %%
-figure
-l=loglog(F,AStrain,F2,AS);
+figure(2)
+l=loglog(F,AStrain,F2,AS,FDARM,DARM);
 text(rotF,sqrt(w1(1)^2+w1(2)^2),' 1F')
 text(2*rotF,sqrt(w2(1)^2+w2(2)^2),' 2F')
 text(3*rotF,sqrt(w3(1)^2+w3(2)^2),' 3F')
@@ -167,11 +171,11 @@ ylabel('Strain (1/\surd(Hz))')
 set(l,'LineWidth',1.5);
 set(gca,'FontSize',16);
 set(l,'MarkerSize',16);
-xlim([1 1e3])
+xlim([1e1 1e3])
 ylim([1e-24 1e-20])
 grid on
 
-figure
+figure(3)
 l=plot(angle,AngleForceTorque(:,2));
 xlabel('Turntable Angle (rad)')
 ylabel('Force in x-direction (N)')
@@ -180,7 +184,7 @@ set(gca,'FontSize',16);
 set(l,'MarkerSize',16);
 grid on
 
-figure
+figure(4)
 l=plot(angle,AngleForceTorque(:,7));
 xlabel('Turntable Angle (rad)')
 ylabel('Torque about z-direction (N m)')

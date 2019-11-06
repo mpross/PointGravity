@@ -17,6 +17,7 @@
 %Displays test mass (array1) in blue, field mass (array2) in red
 function displayPoints(array1, array2)
 
+    figure(1)
 	plot3(0,0,0,'x', ...
         array1(:,2) , array1(:,3) , array1(:,4) , '.' ,...
 	      	array2(:,2) , array2(:,3) , array2(:,4) , '.' );
@@ -24,9 +25,9 @@ function displayPoints(array1, array2)
 	ylabel( 'y (m)' );
 	zlabel( 'z (m)' );
     axis('equal')
-    xlim([-0.2 2.5])
-    zlim([-0.2 0.2])
-    ylim([-0.2 0.2])
+    xlim([-1.5 0.5])
+    zlim([-0.5 0.5])
+    ylim([-1.5 0.5])
     grid on
 
 end
