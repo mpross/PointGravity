@@ -1,10 +1,18 @@
 %All units are SI, always.
 
+% -------------- Configure Code Behaviour --------------------
+FancyGraphics = 'False';
+DisplayFigures = 'False';
+SaveFigures = 'False';
+SaveData = 'False';
+
+% ----------- Load LHO DARM Spectrum -------------------------
 rawDARM=load('LHO_strain_noise.mat');
 FDARM=rawDARM.output(:,1);
 DARM=rawDARM.output(:,2);
 
-rotF=30; % Rotation frequency
+
+rotF=6; % Rotation frequency
 tTotal=100; % Integration time
 
 a2l=0.1; % Angle to Length coupling
@@ -13,8 +21,8 @@ a2l=0.1; % Angle to Length coupling
 CylinderHeight = 2*0.0254;
 CylinderDiameter = 1.5*0.0254;
 CylinderMass = 1.0558;
-CylinderAxialGridPoints = 5;
-CylinderRadialGridPoints = 5;
+CylinderAxialGridPoints = 10;
+CylinderRadialGridPoints = 10;
 
 % NCal Rotor Parameters
 RotorRadius2 = 2.375*0.0254; % Quadrople radius
@@ -27,8 +35,8 @@ TMLength = 30e-2;
 TMDiameter = 40e-2;
 TMMass = 40;
 TMMoment = 1/12*TMMass*(3*TMDiameter^2/4+TMLength^2/4);
-TMAxialGridPoints = 10;
-TMRadialGridPoints = 10;
+TMAxialGridPoints = 20;
+TMRadialGridPoints = 20;
 
 
 %Make a rotor cylinder
@@ -61,7 +69,7 @@ f = waitbar(0,'Calculating','Name','NCal PointGravity',...
     'CreateCancelBtn','setappdata(gcbf,''canceling'',1)');
 setappdata(f,'canceling',0);
 
-for angle = 0:2*pi/1000:2*pi
+for angle = 0:2*pi/10:2*pi
 
     if getappdata(f,'canceling')
         break
